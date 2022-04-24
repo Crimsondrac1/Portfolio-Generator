@@ -1,4 +1,6 @@
+const fs = require('fs');
 const inquirer = require('inquirer');
+const generatePage = require('./src/page-template');
 
 const promptUser = () => {
     return inquirer.prompt([
@@ -56,14 +58,14 @@ const promptUser = () => {
   
 
   const promptProject = portfolioData => {
-    if (!portfolioData.projects) {
-        portfolioData.projects = [];
-      }
     console.log(`
   =================
   Add a New Project
   =================
   `);
+  if (!portfolioData.projects) {
+        portfolioData.projects = [];
+      }
     return inquirer.prompt([
       {
         type: 'input',
@@ -137,10 +139,24 @@ const promptUser = () => {
   
 
     promptUser()
-    .then(promptProject)
-    .then(portfolioData => {
-      console.log(portfolioData);
-    });   
+  .then(promptProject)
+  .then(portfolioData => {
+    const pageHTML = generatePage(portfolioData);
+
+    fs.writeFile('./index.html', pageHTML, err => {
+      if (err) throw new Error(err);
+
+      console.log('Page created! Check out index.html in this directory to see it!');
+    });
+  });
+    
+    // promptUser()
+    // .then(promptProject)
+    // .then(portfolioData => {
+    //   console.log(portfolioData);
+    // });   
+
+
 //   promptUser()
 //   .then(answers => console.log(answers))
 //   .then(promptProject)
